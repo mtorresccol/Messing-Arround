@@ -1,0 +1,53 @@
+from sense_hat import SenseHat, ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
+import time 
+import random
+
+
+
+sense = SenseHat()
+
+sense.set_rotation(90)
+red = (255, 0, 0)
+blue = (0, 50, 255)
+
+#global variables
+score = 0
+#Catcher object
+catcher_x = 7
+catcher_y = 7
+
+#Falling Berry
+berry_x = random.randrange(0, 8)
+berry_y = 0
+game_state = True #true means game in session
+while game_state:
+    sense.clear()
+    sense.set_pixel(catcher_y, catcher_x, blue)
+
+    if berry_x == catcher_x and berry_y == 7:
+      score += 1
+      berry_x = random.randrange(0, 8)
+      print(score)
+      sense.set_rotation(0)
+      sense.show_message(str(score), text_colour=[0, 200, 55])
+      sense.set_rotation(90)
+      berry_y = 0
+    elif berry_y == 7:
+      sense.set_rotation(0)
+      sense.show_message("Game Over !  " + str(score), text_colour=[255, 0, 0])
+      game_state = False
+
+    if (berry_y <= 7):
+      sense.set_pixel(berry_y, berry_x, red)
+      berry_y += 1
+      time.sleep(0.4)
+
+    for event in sense.stick.get_events():
+      #print("pressed {}".format(event.direction))
+      if event.direction == "right" and event.action == "pressed" and catcher_x != 0:
+        catcher_x -= 1
+        print(catcher_x)
+      elif event.direction == "left" and event.action == "pressed" and catcher_x != 7:
+        catcher_x += 1
+        print(catcher_x)
+
